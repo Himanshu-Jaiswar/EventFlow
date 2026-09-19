@@ -9,7 +9,7 @@ const protect = async (req, res, next) => {
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await User.findById(decoded.id);
+            req.user = await User.findById(decoded.id).select('-password');
             if(!req.user){
                 res.status(400).json({message:"Invalid user"})
                 return;
@@ -22,6 +22,17 @@ const protect = async (req, res, next) => {
         }
     }
     else{
-        return res.status({message: "Invalid Token"})
+        return res.status(500).json({message: "Invalid Token"})
     }
 }
+
+const admin = (req, res, next) => {
+    if(req.user && req.user.role === 'admin'){
+        next();
+    }
+    else{
+        return res.status(403).json({message: "Forbidden, admin access required"});
+    }
+}
+
+module.exports = {protect, admin}
