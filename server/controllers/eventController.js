@@ -40,11 +40,11 @@ exports.createEvent = async (req, res) => {
             date,
             location,
             totalSeats,
-            availableSeats,
+            availableSeats:availableSeats !== undefined ? availableSeats : totalSeats,
             category,
             ticketPrice,
-            imageUrl,
-            createdBy
+            imageUrl: imageUrl || image,
+            createdBy: req.user._id
         });
 
         res.status(200).json(event)
@@ -74,6 +74,7 @@ exports.updateEvent = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({message: error.message})
+        console.log("Event creation error ", error.message);
     }
 }
 

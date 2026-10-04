@@ -22,6 +22,7 @@ const protect = async (req, res, next) => {
         }
     }
     else{
+        console.log("Error in middleware or token is invalid", error);
         return res.status(500).json({message: "Invalid Token"})
     }
 }
