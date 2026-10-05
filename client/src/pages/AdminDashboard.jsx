@@ -4,7 +4,7 @@ import api from '../utils/axios';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -16,18 +16,20 @@ const AdminDashboard = () => {
     });
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (!user || user.role !== 'admin') {
             navigate('/login');
             return;
         }
         fetchData();
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
 
     const fetchData = async () => {
         try {
             const [eventsRes, bookingsRes] = await Promise.all([
                 api.get('/events'),
-                api.get('/bookings/my') // Admin gets all bookings
+                api.get('/bookings') // Admin gets all bookings
             ]);
             setEvents(eventsRes.data);
             setBookings(bookingsRes.data);
@@ -86,6 +88,8 @@ const AdminDashboard = () => {
             }
         }
     };
+
+    if (authLoading) return <div className="text-center py-20 text-xl font-semibold">Checking session...</div>;
 
     if (loading) return <div className="text-center py-20 text-xl font-semibold">Loading admin panel...</div>;
 
@@ -225,7 +229,7 @@ const AdminDashboard = () => {
                                                 <button onClick={() => handleConfirmBooking(booking._id, 'paid')} className="flex-1 min-w-[120px] bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
                                                     ✓ Approve as Paid
                                                 </button>
-                                                <button onClick={() => handleConfirmBooking(booking._id, 'not_paid')} className="flex-1 min-w-[120px] bg-gray-50 text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
+                                                <button onClick={() => handleConfirmBooking(booking._id, 'non_paid')} className="flex-1 min-w-[120px] bg-gray-50 text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
                                                     ✓ Approve Undecided
                                                 </button>
                                                 <button onClick={() => handleCancelBooking(booking._id)} className="w-[80px] bg-red-50 text-red-600 hover:bg-red-500 hover:text-white border border-red-200 text-xs font-bold py-2.5 px-3 rounded-lg transition">

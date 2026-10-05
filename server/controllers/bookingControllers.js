@@ -15,10 +15,23 @@ exports.sendBookingOtp = async (req, res) => {
     res.json({message: "OTP sent to mail"})
 }
 
-exports.bookEvent = async (req, res) => {
-    const {eventId, Otp} = req.body;
+exports.getAllBookings = async (req, res) => {
     try {
-    const eventOtp = await OTP.findOne({email:req.user.email, Otp, action:'event_booking'});
+        const bookings = await Booking.find()
+            .populate('eventId')
+            .populate('userId', 'name email'); // Also pulls user name & email
+            
+        res.json(bookings);
+    } catch (error) {
+        console.log("Error fetching all bookings", error);
+        res.status(500).json({message: "Server Error"});
+    }
+}
+
+exports.bookEvent = async (req, res) => {
+    const {eventId, otp} = req.body;
+    try {
+    const eventOtp = await OTP.findOne({email:req.user.email, otp, action:'event_booking'});
     if(!eventOtp){
         return res.status(400).json({message:"Invalid OTP"})
     }
@@ -99,7 +112,7 @@ exports.cancelBooking = async (req, res) => {
         return res.status(400).json({message: "Booking not found"})
     }
 
-    if(booking.userId.toString() !== req.user._id.toString()){
+  if(booking.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin'){
         return res.status(400).json({message: "Unauthorized"});
     }
 
@@ -107,9 +120,9 @@ exports.cancelBooking = async (req, res) => {
     if(booking.status === 'confirmed'){
         const event = await Event.findById(booking.eventId._id);
         event.totalSeats += 1;
-        event.save();
+        await event.save();
     }
 
-    await booking.remove();
+    await Booking.findByIdAndDelete(req.params.id);
     res.json({message: "Booking cancelled"})
 }

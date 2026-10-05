@@ -22,7 +22,9 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = User.create({name, email, password:hashedPassword, role:'user', isVerified:false});
+        const user = await User.create({name, email, password:hashedPassword, role:'user', isVerified:false});
+
+        await OTP.deleteMany({ email, action: 'account_verification' });
 
         const otp = Math.floor(10000 + Math.random() * 900000).toString();
         await OTP.create({email, otp, action:'account_verification'})
@@ -67,7 +69,7 @@ const loginUser = async (req, res) => {
 
         res.status(200).json({
             message: "Login successfully",
-            _id: user.user_id,
+            _id: user._id,
             name: user.name,
             email: user.email,
             role: user.role,
@@ -85,7 +87,7 @@ const verifyOtp = async (req, res) => {
     try {
         const getOtp = await OTP.findOne({email, otp, action: 'account_verification'});
         if(!getOtp){
-            res.status(400).json({message:"Otp has been expired"});
+            return res.status(400).json({message:"Otp has been expired"});
         }
 
         const user = await User.findOneAndUpdate({email}, {isVerified:true});

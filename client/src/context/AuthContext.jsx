@@ -20,6 +20,12 @@ export const AuthProvider = ({children}) => {
        try {
         const {data} = await api.post('/auth/register', {name, email, password});
         setUser(data);
+
+        localStorage.setItem("user", JSON.stringify(data));
+    if (data.token) {
+        localStorage.setItem("token", data.token);
+    }
+    
         return data;
        
     } catch (error) {

@@ -5,18 +5,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaTicketAlt, FaTimesCircle } from 'react-icons/fa';
 
 const UserDashboard = () => {
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
     const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (!user) {
             navigate('/login');
             return;
         }
         fetchBookings();
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
 
     const fetchBookings = async () => {
         try {
@@ -39,6 +41,8 @@ const UserDashboard = () => {
             }
         }
     };
+
+    if (authLoading) return <div className="text-center py-20 text-xl font-semibold">Checking session...</div>;
 
     if (loading) return <div className="text-center py-20 text-xl font-semibold">Loading dashboard...</div>;
 
