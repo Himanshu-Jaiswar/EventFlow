@@ -1,5 +1,7 @@
 # EventFlow - Full-Stack Event Booking & Management Platform
 
+**Live Demo:** [Link](https://eventflowweb.netlify.app/)
+
 EventFlow is a full-stack MERN application that allows users to discover events, submit booking requests, and verify their actions via two-factor email OTPs. It features a dedicated administrative dashboard for organizers to create and manage events, track live revenue metrics, and approve or reject ticket bookings.
 
 ---
