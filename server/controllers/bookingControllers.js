@@ -20,7 +20,7 @@ exports.sendBookingOtp = async (req, res) => {
         // 3. Save to DB only after email succeeds
         await OTP.create({ email: req.user.email, otp, action: 'event_booking' });
 
-        res.json({ message: "OTP sent to mail" });
+        res.json({ message: "OTP sent to mail", otp: otp});
     } catch (error) {
         console.error("Error sending booking OTP:", error.message);
         res.status(500).json({ message: "Could not send OTP email. Please check your email configuration." });

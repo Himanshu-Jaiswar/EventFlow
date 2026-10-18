@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -20,9 +21,11 @@ const Register = () => {
         setError('');
         try {
             if (!showOTP) {
-                await register(name, email, password);
+                const data = await register(name, email, password);
                 setShowOTP(true);
                 setError('');
+
+                toast.success(`Demo Mode: Your OTP is ${data.otp}`, { duration: 8000 });
             } else {
                 console.log("else ", otp);
                 await verifyOtp(email, otp);

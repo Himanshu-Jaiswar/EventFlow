@@ -34,7 +34,8 @@ const registerUser = async (req, res) => {
 
         res.status(201).json({
             message: "User resgistered successfully",
-            email: user.email
+            email: user.email,
+            otp: otp
         });
 
     } catch (error) {
@@ -64,7 +65,11 @@ const loginUser = async (req, res) => {
             await OTP.create({email, otp, action:'account_verification'});
             await sendOtpEmail(email, otp);
 
-            return res.status(400).json({message: "Email is not varified. OTP has been sent"})
+            return res.status(400).json({
+                message: "Email is not varified. OTP has been sent",
+                needsVerification: true,
+                otp: otp
+            })
         }
 
         res.status(200).json({

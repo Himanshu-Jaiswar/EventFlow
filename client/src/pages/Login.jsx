@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -29,11 +30,12 @@ const Login = () => {
                 else navigate('/dashboard');
             }
         } catch (err) {
-            if (err.needsVerification) {
+            if (errorData?.needsVerification) {
                 setShowOTP(true);
-                setError('Account not verified. A new OTP has been sent to your email.');
+                setError('Account not verified. A new OTP has been sent.');
+                toast.success(`Demo Mode: Your OTP is ${errorData.otp}`, { duration: 8000 });
             } else {
-                setError(err.message || err);
+                setError(errorData?.message || err.message);
             }
         } finally {
             setLoading(false);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import EventDetail from './pages/EventDetail';
@@ -15,6 +16,7 @@ function App() {
         <Router>
             <div className="min-h-screen bg-gray-50 flex flex-col">
                 <Navbar />
+                <Toaster position="top-center" />
                 <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Routes>
                         <Route path="/" element={<Home />} />
